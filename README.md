@@ -1130,7 +1130,7 @@ void Configure(DiContainer builder)
 }
 ```
 
-> Zenject version is not supported `InstanceScope.Singleton` for Zenject's limitation. The default is `Scoped`, which cannot be changed.
+> Zenject version is only supported `AsCached`. `AsSingle` and `AsTransient` are not supported.
 
 `BuiltinContainerBuilder` is builtin minimum DI library for MessagePipe, it no needs other DI library to use MessagePipe. Here is installation sample.
 
