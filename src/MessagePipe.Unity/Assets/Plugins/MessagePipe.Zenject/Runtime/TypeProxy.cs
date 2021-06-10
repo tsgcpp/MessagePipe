@@ -37,28 +37,24 @@ namespace MessagePipe.Zenject
             builder.Bind(type).AsSingle();
         }
 
-        public void Add(Type type, InstanceLifetime lifetime)
+        public void Add<T>()
         {
-            if (lifetime == InstanceLifetime.Scoped)
-            {
-                builder.Bind(type).AsCached();
-            }
-            else
-            {
-                builder.Bind(type).AsSingle();
-            }
+            builder.Bind<T>().AsCached();
         }
 
-        public void Add(Type serviceType, Type implementationType, InstanceLifetime lifetime)
+        public void Add<TService, TImplementation>()
+            where TImplementation : TService
         {
-            if (lifetime == InstanceLifetime.Scoped)
-            {
-                builder.Bind(serviceType).To(implementationType).AsCached();
-            }
-            else
-            {
-                builder.Bind(serviceType).To(implementationType).AsSingle();
-            }
+            builder.Bind<TService>().To<TImplementation>().AsCached();
+        }
+
+        public void Add<TService1, TService2, TImplementation>()
+            where TImplementation : TService1, TService2
+        {
+            builder
+                .Bind(typeof(TService1), typeof(TService2))
+                .To<TImplementation>()
+                .AsCached();
         }
     }
 

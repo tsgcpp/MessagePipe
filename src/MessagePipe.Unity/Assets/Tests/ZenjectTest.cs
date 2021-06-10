@@ -136,8 +136,8 @@ public class ZenjectTest
 
         var resolver = TestHelper.BuildZenject(options =>
        {
-            // options.InstanceLifetime = InstanceLifetime.Scoped;
-            options.AddGlobalRequestHandlerFilter<MyRequestHandlerFilter>(-1799);
+           // options.InstanceLifetime = InstanceLifetime.Scoped;
+           options.AddGlobalRequestHandlerFilter<MyRequestHandlerFilter>(-1799);
        }, (options, builder) =>
        {
            builder.BindInstance(store);
@@ -193,6 +193,37 @@ public class ZenjectTest
         d3.Dispose();
         p.Publish(new IntClass { Value = 4 });
         CollectionAssert.AreEqual(new[] { 9999, 333, 333, 11, 11, 4 }, l);
+    }
+
+    [Test]
+    public void BindMessageBrokerScopeAsCached()
+    {
+        var resolver = TestHelper.BuildZenject((options, builder) =>
+        {
+            builder.BindMessageBroker<int>(options);
+        });
+
+        var pub1 = resolver.Resolve<IPublisher<int>>();
+        var pub2 = resolver.Resolve<IPublisher<int>>();
+        var sub1 = resolver.Resolve<ISubscriber<int>>();
+        var sub2 = resolver.Resolve<ISubscriber<int>>();
+
+        Assert.AreEqual(pub1, pub2);
+        Assert.AreEqual(pub1, sub1);
+        Assert.AreEqual(pub1, sub2);
+    }
+
+    [Test]
+    public void BindMessageBrokerDuplicateBindDoesNotThrowsException()
+    {
+        Assert.DoesNotThrow(() =>
+        {
+            var sWAresolver = TestHelper.BuildZenject((options, builder) =>
+            {
+                builder.BindMessageBroker<int>(options);
+                builder.BindMessageBroker<int>(options);
+            });
+        });
     }
 
     public class IntClass
